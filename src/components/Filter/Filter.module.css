@@ -1,0 +1,11 @@
+.filter {
+    font-size: 20px;
+    width: 60%;
+}
+
+.filterItem {
+    display: flex;
+    flex-direction: column;
+    line-height: 2em;
+    align-items: center;
+}

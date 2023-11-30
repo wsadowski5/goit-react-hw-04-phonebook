@@ -1,0 +1,19 @@
+.contactListWrapper {
+    width: 60%;
+}
+
+.contactsList {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    font-size: 18px;;
+}
+
+.contactListItem {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    line-height: 1.5em;
+}

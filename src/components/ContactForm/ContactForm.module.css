@@ -1,0 +1,16 @@
+.contactFormWrapper{
+    width: 60%;
+    align-items: center;
+}
+
+.contactForm {
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ gap: 10px;
+}
+
+.contactFormItem {
+    display: flex;
+    justify-content: space-between;
+}
