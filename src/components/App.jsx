@@ -1,29 +1,32 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { ContactsList } from './ContactsList/ContactsList';
 import { ContactForm } from './ContactForm/ContactForm';
 import { v4 as uuidv4 } from 'uuid';
 import { Filter } from './Filter/Filter';
-import css from "./App.module.css"
+import css from './App.module.css';
 
-const INITIAL_STATE = {
-  contacts: [
-    { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-    { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-    { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-    { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-  ],
-  filter: '',
-};
+export const App = () => {
+  const [contacts, setContacts] = useState(() => {
+    const savedData = localStorage.getItem('contacts');
+    const parsedData = JSON.parse(savedData);
+    return (
+      parsedData || [
+        { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+        { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+        { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+        { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+      ]
+    );
+  });
 
-export class App extends Component {
-  state = { ...INITIAL_STATE };
+  const [filter, setFilter] = useState('');
 
-  handleChange = e => {
-    const { name, value } = e.target;
-    this.setState({ [name]: value });
+  const handleChange = e => {
+    const filter = e.target.value;
+    setFilter(filter);
   };
 
-  handleSubmit = ({ name, number }) => {
+  const handleSubmit = ({ name, number }) => {
     const randomId = uuidv4();
     const contactName = name;
     const contactNumber = number;
@@ -32,48 +35,47 @@ export class App extends Component {
       name: contactName,
       number: contactNumber,
     };
-    let contactList = [...this.state.contacts];
+    let contactList = [...contacts];
 
     if (
-      this.state.contacts.findIndex(
+      contacts.findIndex(
         contact => contactName.toLowerCase() === contact.name.toLowerCase()
       ) === -1
     ) {
-      contactList = [...this.state.contacts, newContact];
+      contactList = [...contacts, newContact];
     } else {
       alert(`${name} is already in contacts.`);
     }
-
-    this.setState({ contacts: contactList });
+    setContacts(contactList);
   };
 
-  handleFilteredContacts = () => {
-    const filteredContacts = this.state.contacts.filter(contact =>
-      contact.name.toLowerCase().includes(this.state.filter.toLowerCase())
+  const handleFilteredContacts = () => {
+    const filteredContacts = contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filter.toLowerCase())
     );
     return filteredContacts;
   };
 
-
-
-  deleteContact = id => {
-    this.setState({ contacts: this.state.contacts.filter(contact=> contact.id !==id) });
+  const deleteContact = id => {
+    setContacts(contacts.filter(contact => contact.id !== id));
   };
 
-  render() {
-    const { filter } = this.state;
-    return (
-      <div className={css.container}>
-        <h1 className={css.containerHeader}>Phonebook</h1>
-        <h2>Add contact</h2>
-        <ContactForm onSubmit={this.handleSubmit} />
-        <h2>Contacts</h2>
-        <Filter filter={filter} handleChange={this.handleChange} />
-        <ContactsList
-          contacts={this.handleFilteredContacts()}
-          handleDelete={this.deleteContact}
-        />
-      </div>
-    );
-  }
-}
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+    console.log(localStorage);
+  }, [contacts]);
+
+  return (
+    <div className={css.container}>
+      <h1 className={css.containerHeader}>Phonebook</h1>
+      <h2>Add contact</h2>
+      <ContactForm onSubmit={handleSubmit} />
+      <h2>Contacts</h2>
+      <Filter filter={filter} handleChange={handleChange} />
+      <ContactsList
+        contacts={handleFilteredContacts()}
+        handleDelete={deleteContact}
+      />
+    </div>
+  );
+};
